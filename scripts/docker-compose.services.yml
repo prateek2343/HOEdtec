@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+  ####################################
+  ## Service Name: auth             ##
+  ####################################
+  auth-service:
+    build:
+      context: ../auth
+      dockerfile: Dockerfile
+    environment:
+      ENV: ${ENV}
+    networks:
+      - network
+    volumes:
+      - ../auth/src:/usr/src/app/src
+      - ./log:/usr/src/app/log
+
+  ####################################
+  ## Service Name: Admin API        ##
+  ####################################
+  api-service:
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    environment:
+      ENV: ${ENV}
+    networks:
+      - network
+    volumes:
+      - ../api/src:/usr/src/app/src
+      - ./log:/usr/src/app/log
+
+  ####################################
+  ## Service Name: lgo             ##
+  ####################################
+  lgo-service:
+    build:
+      context: ../lgo
+      dockerfile: Dockerfile
+    environment:
+      ENV: ${ENV}
+    networks:
+      - network
+    ports:
+      - '8090:3000'
+    volumes:
+      - ../lgo/src:/usr/src/app/src
+      - ./log:/usr/src/app/log
+
+  ####################################
+  ## Service Name: gateway          ##
+  ####################################
+  api-gateway:
+    build:
+      context: ../gateway
+      dockerfile: Dockerfile
+    ports:
+      - "0.0.0.0:8080:80"
+    networks:
+      - network
+    volumes:
+      - ./log:/var/log/
+      - ./log/nginx:/var/log/nginx
+    depends_on:
+      - auth-service
+      - api-service
+      - lgo-service
+
+networks:
+  network:
+    driver: bridge

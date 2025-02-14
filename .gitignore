@@ -1,0 +1,11 @@
+log
+data
+.env
+# *.yml
+.DS_Store
+
+scripts/log
+scripts/data
+migration/node_modules
+lgo/node_modules
+lgo/package-lock.json

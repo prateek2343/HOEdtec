@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  ####################################
+  ## Service Name: rdbms            ##
+  ## Environemnt File: .env         ##
+  ####################################
+  rdbms:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - network
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+
+  ####################################
+  ## Service Name: adminer         ##
+  ####################################
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    networks:
+      - network
+    environment:
+      ADMINER_DEFAULT_SERVER: rdbms
+    ports:
+      - 9094:8080
+    depends_on:
+      rdbms:
+        condition: service_healthy
+
+networks:
+  network:
+    driver: bridge

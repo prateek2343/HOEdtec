@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  ####################################
+  ## Service Name: db migration     ##
+  ####################################
+  migration:
+    build:
+      context: ../migration
+      dockerfile: Dockerfile
+    environment:
+      ENV: ${ENV}
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
